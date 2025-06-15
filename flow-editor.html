@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flow Editor</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #diagram { border: 1px solid #ccc; padding: 10px; }
+    textarea { width: 100%; height: 200px; }
+    .controls { margin-top: 10px; }
+    .controls input { margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Flow Editor</h1>
+  <textarea id="mermaidInput"></textarea>
+  <div class="controls">
+    <button id="updateBtn">Update</button>
+    <button id="saveBtn">Save</button>
+    <button id="loadBtn">Load</button>
+  </div>
+  <div class="controls">
+    <input type="text" id="nodeId" placeholder="Node ID">
+    <input type="text" id="nodeLabel" placeholder="Node label">
+    <button id="addNodeBtn">Add Node</button>
+  </div>
+  <div class="controls">
+    <input type="text" id="fromNode" placeholder="From">
+    <input type="text" id="toNode" placeholder="To">
+    <input type="text" id="edgeLabel" placeholder="Edge label">
+    <button id="addEdgeBtn">Add Edge</button>
+  </div>
+  <div id="diagram"></div>
+  <script>
+    mermaid.initialize({ startOnLoad: false });
+    const input = document.getElementById('mermaidInput');
+    const diagram = document.getElementById('diagram');
+
+    function render() {
+      const code = input.value;
+      mermaid.render('mermaidDiagram', code, svgCode => {
+        diagram.innerHTML = svgCode;
+      });
+    }
+
+    document.getElementById('updateBtn').addEventListener('click', render);
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      localStorage.setItem('mermaidFlow', input.value);
+    });
+    document.getElementById('loadBtn').addEventListener('click', () => {
+      input.value = localStorage.getItem('mermaidFlow') || '';
+      render();
+    });
+
+    document.getElementById('addNodeBtn').addEventListener('click', () => {
+      const id = document.getElementById('nodeId').value.trim();
+      const label = document.getElementById('nodeLabel').value.trim();
+      if (!id) return;
+      const lines = input.value.trim().split('\n');
+      if (!lines[0]) {
+        lines[0] = 'graph LR';
+      }
+      lines.push(`${id}[${label || id}]`);
+      input.value = lines.join('\n');
+      document.getElementById('nodeId').value = '';
+      document.getElementById('nodeLabel').value = '';
+      render();
+    });
+
+    document.getElementById('addEdgeBtn').addEventListener('click', () => {
+      const from = document.getElementById('fromNode').value.trim();
+      const to = document.getElementById('toNode').value.trim();
+      const label = document.getElementById('edgeLabel').value.trim();
+      if (!from || !to) return;
+      const lines = input.value.trim().split('\n');
+      if (!lines[0]) {
+        lines[0] = 'graph LR';
+      }
+      if (label) {
+        lines.push(`${from} -->|${label}| ${to}`);
+      } else {
+        lines.push(`${from} --> ${to}`);
+      }
+      input.value = lines.join('\n');
+      document.getElementById('fromNode').value = '';
+      document.getElementById('toNode').value = '';
+      document.getElementById('edgeLabel').value = '';
+      render();
+    });
+
+    // load initial
+    const stored = localStorage.getItem('mermaidFlow');
+    if (stored) {
+      input.value = stored;
+    } else {
+      input.value = `graph LR\nA[Start] --> B[End]`;
+    }
+    render();
+  </script>
+</body>
+</html>

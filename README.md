@@ -233,6 +233,10 @@ Check out these resources to learn more or get involved:
   Add a link to get support, GitHub status page, code of conduct, license link.
 -->
 
+## Flow Editor
+
+This repository includes a simple HTML based flow editor using [Mermaid](https://mermaid-js.github.io/). Open `flow-editor.html` in your browser to build diagrams. Use the GUI forms to add nodes or edges and edit the Mermaid code directly. Click **Save** to store to localStorage and **Load** to restore.
+
 ---
 
 Get help: [Post in our discussion board](https://github.com/skills/.github/discussions) &bull; [Review the GitHub status page](https://www.githubstatus.com/)
